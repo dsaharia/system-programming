@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 void label(FILE*, FILE*, char*);
 void mnemonic(FILE*,FILE*,FILE*,char*);
@@ -14,7 +15,6 @@ int main()
 	fsource = fopen("source.txt", "r"); // Main assembler source file.
 	flabel = fopen("label.txt", "a+"); // to save the labels.
 	fmnemonic = fopen("mnemonic.txt", "a+");
-	fgets(opcode,200,finstruction);
 	//label(fsource,flabel,src);
 	mnemonic(fsource,finstruction,fmnemonic,src);
 
@@ -39,22 +39,27 @@ void label(FILE* fsource, FILE* flabel, char *src)
 
 }
 
-void mnemonic(FILE *fsource,FILE *finstruction,FILE *mnemonic,char *src) 
+void mnemonic(FILE *fsource,FILE *finstruction,FILE *fmnemonic,char *src) 
 {
+	char mnemonics[25], opcode[25];
 	while(fscanf(fsource, "%*s %s %*s", src) == 1)
 	{
-	    printf("%s\n",src);
+	    while(fscanf(finstruction, "%s %s", mnemonics,opcode) == 2)
+	    {
+		if(strcmp(src,mnemonics) == 0)
+		{
+		    fputs(mnemonics,fmnemonic);
+		    fputc('\t', fmnemonic);
+		    fputs(opcode,fmnemonic);
+		    fputc('\n', fmnemonic);
+		}
+	    
+	    }
+	    //printf("%s\t%s\t%s\n",src,mnemonics,opcode);
+	    rewind(finstruction);
 	
 	}
 
 }
-
-
-
-
-
-
-
-
 
 

@@ -1,4 +1,3 @@
-STL 2
 ADD 18
 DIV 24
 COMP 28
