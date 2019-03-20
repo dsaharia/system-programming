@@ -31,12 +31,12 @@ int main()
 		 }
 		else if (!strcmp(mnemonic, "BYTE")) {
 			if (label2[0] == 'C') {
-				// if C, then add 1 byte for each character
-				loc += (strlen(label2) - 3); // subtracting quotes and 'C'
+				loc += (strlen(label2) - 3);
 			}
 			else {
-				loc += ((strlen(label2) - 3) / 2 ); // else X, then add half byte for each character.
+				loc += ((strlen(label2) - 3) / 2 );
 			}
+
 		}
 		else {
 			loc += 3;
