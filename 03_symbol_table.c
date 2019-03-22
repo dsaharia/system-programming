@@ -49,10 +49,10 @@ int main()
 			fprintf(fsymbol_table, "%s ", label1);
 			fputc('\n', fintermediate);
 			fputc('\n', fsymbol_table);
-			loc += 3; 
+			loc += 3;
 		}
-		
-		
+
+
 
 	}
 
