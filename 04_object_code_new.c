@@ -10,16 +10,22 @@ int main() {
 	fmnemonic = fopen("mnemonic.txt", "r");
 
 	char line[1000], operand[20], opcode[5], object_code[30], mnemonic[25], tabbed_mnemonic[25], table_mnemonic[25], location[25], table_label[25];
-	char target_label[10], target_operand[10];
-	int index_location;
+	char target_label[10], target_operand[10], temp[10];
+	int index_location, i;
 
 	while(fgets(line,1000, fintermediate)) {
 		sscanf(line, "%*s %s %s %s", tabbed_mnemonic, mnemonic, operand);
 		printf("%s %s %s\n", tabbed_mnemonic, mnemonic, operand);
 		line[strlen(line) - 1] = ' ';
-		// if (mnemonic[strlen(mnemonic)-1] == 'X') {
-		// 	strcpy(target_address, )
-		// }
+		i=0;
+		if (mnemonic[strlen(mnemonic)-1] == 'X') {
+			while (mnemonic[i] != ',') {
+				temp[i] = mnemonic[i];
+				i++;
+			}
+			temp[i] = '\0';
+			printf("INDEX TARGET: %s\n", temp);
+		}
 
 		while (fscanf(fmnemonic, "%s\t%s", table_mnemonic, object_code) == 2) {
 			if(!strcmp(table_mnemonic, mnemonic) || !strcmp(table_mnemonic, tabbed_mnemonic)) {
@@ -42,7 +48,6 @@ int main() {
 			else if (!strcmp(table_label, operand)) {
 				strcat(line, location);
 				break;
-
 			}
 		}
 		rewind(fsymbol);
@@ -70,11 +75,15 @@ int main() {
 		sscanf(line, "%*s %s %s %s", tabbed_mnemonic, mnemonic, operand);
 		if (!strcmp(target_label, tabbed_mnemonic)) {
 			index_location = atoi(operand);
-			break;
+			//break;
 		}
-		// while (fscanf(fsymbol, "%s %s", location, table_label) == 2) {
-		// 	if (!strcmp())
-		// }
+		printf("%lu\n", strlen(temp));
+		while (fscanf(fsymbol, "%s %s", location, table_label) == 2) {
+			if (!strcmp(temp, table_label)) {
+				printf("ADD: %s\n", location);
+			}
+		}
+		rewind(fsymbol);
 	}
 	printf("value at register X: %d\n", index_location);
 
