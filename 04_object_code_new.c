@@ -18,14 +18,15 @@ int main() {
 		printf("%s %s %s\n", tabbed_mnemonic, mnemonic, operand);
 		line[strlen(line) - 1] = ' ';
 		i=0;
-		if (mnemonic[strlen(mnemonic)-1] == 'X') {
-			while (mnemonic[i] != ',') {
-				temp[i] = mnemonic[i];
-				i++;
-			}
-			temp[i] = '\0';
-			printf("INDEX TARGET: %s\n", temp);
-		}
+		// USed for Indexed adressing
+		// if (mnemonic[strlen(mnemonic)-1] == 'X') {
+		// 	while (mnemonic[i] != ',') {
+		// 		temp[i] = mnemonic[i];
+		// 		i++;
+		// 	}
+		// 	temp[i] = '\0';
+		// 	printf("INDEX TARGET: %s\n", temp);
+		// }
 
 		while (fscanf(fmnemonic, "%s\t%s", table_mnemonic, object_code) == 2) {
 			if(!strcmp(table_mnemonic, mnemonic) || !strcmp(table_mnemonic, tabbed_mnemonic)) {
@@ -71,20 +72,20 @@ int main() {
 		
 	 }
 	 
-	while (fgets(line,1000, fintermediate)) {
-		sscanf(line, "%*s %s %s %s", tabbed_mnemonic, mnemonic, operand);
-		if (!strcmp(target_label, tabbed_mnemonic)) {
-			index_location = atoi(operand);
-			//break;
-		}
-		printf("%lu\n", strlen(temp));
-		while (fscanf(fsymbol, "%s %s", location, table_label) == 2) {
-			if (!strcmp(temp, table_label)) {
-				printf("ADD: %s\n", location);
-			}
-		}
-		rewind(fsymbol);
-	}
-	printf("value at register X: %d\n", index_location);
+	// while (fgets(line,1000, fintermediate)) {
+	// 	sscanf(line, "%*s %s %s %s", tabbed_mnemonic, mnemonic, operand);
+	// 	if (!strcmp(target_label, tabbed_mnemonic)) {
+	// 		index_location = atoi(operand);
+	// 		//break;
+	// 	}
+	// 	printf("%lu\n", strlen(temp));
+	// 	while (fscanf(fsymbol, "%s %s", location, table_label) == 2) {
+	// 		if (!strcmp(temp, table_label)) {
+	// 			printf("ADD: %s\n", location);
+	// 		}
+	// 	}
+	// 	rewind(fsymbol);
+	// }
+	// printf("value at register X: %d\n", index_location);
 
 }
