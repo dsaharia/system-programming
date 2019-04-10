@@ -251,7 +251,7 @@ int main() {
                      temp2[j] = '\0';
                      j=0;
                      i=0;
-                        fprintf(fobjectCode, "%s %s %s %s %c%c000000\n", loc, label1, mnemonic, label2, BinToHex(temp1), BinToHex(temp2));
+                        fprintf(fobjectCode, "%s %s %s %s %c%c0000\n", loc, label1, mnemonic, label2, BinToHex(temp1), BinToHex(temp2));
                     }
                 }
                 
