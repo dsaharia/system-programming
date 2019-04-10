@@ -48,8 +48,8 @@ int main() {
     // For object code generation
     char object[35], table_mnemonic[10] ,temp[10], opcode[10];
     char d1[5], d2[5], temp1[6], temp2[6], temp3[6], label2_temp[10], temp_mnemonic[10];
-    char table_label[15];
-    int j, i=0, table_loc;
+    char table_label[15], target[10], buffer[10], target_disp[15];
+    int j, i=0, table_loc, base_loc, target_add, disp;
     while(fscanf(fintermediate, "%s %s %s %s", loc, label1, mnemonic, label2) == 4) {
         if (label2[0] == '#') {
             while(fscanf(fmnemonic, "%s %s", table_mnemonic, opcode) == 2) {
@@ -190,7 +190,6 @@ int main() {
                             fprintf(fobjectCode, "%s %s %s %s ", loc, label1, mnemonic, label2);
                             fprintf(fobjectCode, "%c%c%c%.5X\n",BinToHex(temp1),BinToHex(temp2),BinToHex(temp3), table_loc);
                             printf("%c%c%c%.5X\n",BinToHex(temp1),BinToHex(temp2),BinToHex(temp3), table_loc );
-                            printf("yy: %s\n", table_label);
                         }
 
                      }
@@ -199,7 +198,151 @@ int main() {
                 }
             }
             rewind(fmnemonic);
+            if (!strcmp(mnemonic, "BASE") || !strcmp(mnemonic, "RESW") || !strcmp(mnemonic, "END")) {
+                fprintf(fobjectCode, "%s %s %s %s\n", loc, label1, mnemonic, label2);
+                if(!strcmp(mnemonic, "BASE")) {
+                    while(fscanf(fsymbol, "%X %s", &table_loc, table_label) == 2) {
+                            if(!strcmp(table_label, label2)) {
+                            base_loc = table_loc;
+                        }
+                    }
+                    rewind(fsymbol);
+                    
+                }
+            }
+            if(!strcmp(label2, "-")) {
+                while(fscanf(fmnemonic, "%s %s", table_mnemonic, opcode) == 2) {
+                    if(!strcmp(mnemonic, table_mnemonic)) {
+                        strcpy(d1, HexToBin(opcode[0]));
+                        strcpy(d2, HexToBin(opcode[1]));
+                        //printf("%s %s\n", d1, d2);
+                        while(i<4) {
+                            object[i] = d1[i];
+                            i++;
+                        }
+                        j=0;
+                        while(i<6) {
+                            object[i] = d2[j];
+                            i++;
+                            j++;
+                        }
+                        while(i<12) {
+                        if (i == 6 || i == 7){
+                            object[i] = '1';
+                        }
+                        else {
+                            object[i] = '0';
+                        }
+                        i++;
+                     } 
+                        object[i] = '\0';
+                        i=0;
+                        j=0;
+                    while(i < 4) {
+                        temp1[j] = object[i];
+                        i++;
+                        j++;
+                     }
+                     temp1[j] = '\0';
+                     j=0;
+                     while (i<8) {
+                        temp2[j++] = object[i++];
+                     }
+                     temp2[j] = '\0';
+                     j=0;
+                     i=0;
+                        fprintf(fobjectCode, "%s %s %s %s %c%c000000\n", loc, label1, mnemonic, label2, BinToHex(temp1), BinToHex(temp2));
+                    }
+                }
+                
+            }
+            rewind(fmnemonic);
+            if (label2[strlen(label2) - 1] == 'X') {
+                while(fscanf(fmnemonic, "%s %s", table_mnemonic, opcode) == 2) {
+                if (!strcmp(table_mnemonic, mnemonic)) {
+                    strcpy(d1, HexToBin(opcode[0]));
+                    strcpy(d2, HexToBin(opcode[1]));
+                    //printf("%s %s\n", d1, d2);
+                    while(i<4) {
+                        object[i] = d1[i];
+                        i++;
+                    }
+                    j=0;
+                    while(i<6) {
+                        object[i] = d2[j];
+                        i++;
+                        j++;
+                    }
+                     while(i<12) {
+                        if (i == 6 || i == 7 || i == 8 || i == 9){
+                            object[i] = '1';
+                        }
+                        else {
+                            object[i] = '0';
+                        }
+                        i++;
+                     }
+                     object[i] = '\0';
+                     i=0;
+                     while(label2[i] != ',') {
+                        target[i] = label2[i];
+                        i++;
+                     }
+                     target[i] = '\0';
+                     while(fscanf(fsymbol, "%X %s", &table_loc, table_label) == 2) {
+                        if(!strcmp(table_label, target)) {
+                            target_add = table_loc;
+                        }
+                     }
+                     disp = target_add - base_loc;
+                     sprintf(buffer, "%X", disp); // to convert the disp to string
+                     if(strlen(buffer) > 3){
+                         i = strlen(buffer)-3;
+                         j = 0;
+                         while(i < 8) {
+                            target_disp[j] = buffer[i];
+                            i++;
+                            j++;
+                         }
+                         target_disp[j] = '\0';
+                         i=0;
+                         j = 0;
+                         while(i < 4) {
+                            temp1[j] = object[i];
+                            i++;
+                            j++;
+                         }
+                         temp1[j] = '\0';
+
+                         j = 0;
+                         while (i<8) {
+                            temp2[j++] = object[i++];
+                         }
+                         temp2[j] = '\0';
+                         j = 0;
+                         while (i < 12) {
+                            temp3[j++] = object[i++];
+                         }
+                         temp3[j] = '\0';
+                         j = 0;
+                         i=0;
+                         printf("DD:%s\n", buffer);
+                         printf("SS: %s\n", target_disp);
+                         fprintf(fobjectCode, "%s %s %s %s ", loc, label1, mnemonic, label2);
+                         fprintf(fobjectCode, "%c%c%c%s\n",BinToHex(temp1),BinToHex(temp2),BinToHex(temp3),target_disp);
+                    }
+                    else {
+                        fprintf(fobjectCode, "%s %s %s %s ", loc, label1, mnemonic, label2);
+                         fprintf(fobjectCode, "%c%c%c%.3X\n",BinToHex(temp1),BinToHex(temp2),BinToHex(temp3),disp);
+                    }
+                     rewind(fsymbol);
+                     // printf("TT:%s\n", target);
+                     // printf("NN: %s\n", object);
+                }
+            }
+            rewind(fmnemonic);
         }
+    }
 
     
     return 0;
